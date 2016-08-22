@@ -18,16 +18,16 @@ class ClosureComponentDefinition extends CurlyComponentDefinition {
 }
 
 export class ClosureComponentReference extends CachedReference {
-  static create(args, parentMeta, env) {
-    return new ClosureComponentReference(args, parentMeta, env);
+  static create(args, blockMeta, env) {
+    return new ClosureComponentReference(args, blockMeta, env);
   }
 
-  constructor(args, parentMeta, env) {
+  constructor(args, blockMeta, env) {
     super();
     this.defRef = args.positional.at(0);
     this.env = env;
     this.tag = args.positional.at(0).tag;
-    this.parentMeta = parentMeta;
+    this.blockMeta = blockMeta;
     this.args = args;
     this.lastDefinition = undefined;
     this.lastName = undefined;
@@ -37,7 +37,7 @@ export class ClosureComponentReference extends CachedReference {
     // TODO: Figure out how to extract this because it's nearly identical to
     // DynamicComponentReference::compute(). The only differences besides
     // currying are in the assertion messages.
-    let { args, defRef, env, parentMeta, lastDefinition, lastName } = this;
+    let { args, defRef, env, blockMeta, lastDefinition, lastName } = this;
     let nameOrDef = defRef.value();
     let definition = null;
 
@@ -48,7 +48,7 @@ export class ClosureComponentReference extends CachedReference {
     this.lastName = nameOrDef;
 
     if (typeof nameOrDef === 'string') {
-      definition = env.getComponentDefinition([nameOrDef], parentMeta);
+      definition = env.getComponentDefinition([nameOrDef], blockMeta);
       assert(`The component helper cannot be used without a valid component name. You used "${nameOrDef}" via (component "${nameOrDef}")`, definition);
     } else if (isClosureComponent(nameOrDef)) {
       definition = nameOrDef;
@@ -140,7 +140,7 @@ export default {
   isInternalHelper: true,
 
   toReference(args, env) {
-    // TODO: Need to figure out what to do about parentMeta here.
+    // TODO: Need to figure out what to do about blockMeta here.
     return ClosureComponentReference.create(args, null, env);
   }
 };
