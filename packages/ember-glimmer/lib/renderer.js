@@ -7,7 +7,6 @@ import { assert } from 'ember-metal/debug';
 import _runInTransaction from 'ember-metal/transaction';
 import isEnabled from 'ember-metal/features';
 import { BOUNDS } from './component';
-import RootTemplate from './templates/root';
 import { RootComponentDefinition } from './syntax/curly-component';
 
 let runInTransaction;
@@ -84,8 +83,9 @@ backburner.on('begin', loopBegin);
 backburner.on('end', loopEnd);
 
 class Renderer {
-  constructor({ env, _viewRegistry = fallbackViewRegistry, destinedForDOM = false }) {
+  constructor(env, rootTemplate, _viewRegistry = fallbackViewRegistry, destinedForDOM = false) {
     this._env = env;
+    this._rootTemplate = rootTemplate;
     this._viewRegistry = _viewRegistry;
     this._destinedForDOM = destinedForDOM;
     this._destroyed = false;
@@ -109,7 +109,7 @@ class Renderer {
     let rootDef = new RootComponentDefinition(view);
     let self = new RootReference(rootDef);
     let dynamicScope = new DynamicScope(view, UNDEFINED_REFERENCE, UNDEFINED_REFERENCE, true, null);
-    this._renderRoot(view, RootTemplate.create({ env: this }), self, target, dynamicScope);
+    this._renderRoot(view, this._rootTemplate, self, target, dynamicScope);
   }
 
   rerender(view) {
@@ -241,13 +241,13 @@ class Renderer {
 }
 
 export const InertRenderer = {
-  create({ dom, env, _viewRegistry }) {
-    return new Renderer({ dom, env, _viewRegistry, destinedForDOM: false });
+  create({ env, rootTemplate, _viewRegistry }) {
+    return new Renderer(env, rootTemplate, _viewRegistry, false);
   }
 };
 
 export const InteractiveRenderer = {
-  create({ dom, env, _viewRegistry }) {
-    return new Renderer({ dom, env, _viewRegistry, destinedForDOM: true });
+  create({ env, rootTemplate, _viewRegistry }) {
+    return new Renderer(env, rootTemplate, _viewRegistry, true);
   }
 };
