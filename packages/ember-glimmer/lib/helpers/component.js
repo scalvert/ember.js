@@ -1,14 +1,8 @@
 import { CachedReference } from '../utils/references';
 import { CurlyComponentDefinition, validatePositionalParameters } from '../syntax/curly-component';
-import { EvaluatedArgs, EvaluatedNamedArgs, EvaluatedPositionalArgs } from 'glimmer-runtime';
+import { EvaluatedArgs, EvaluatedNamedArgs, EvaluatedPositionalArgs, isComponentDefinition } from 'glimmer-runtime';
 import { assert } from 'ember-metal/debug';
 import assign from 'ember-metal/assign';
-
-const COMPONENT_DEF_BRAND = 'COMPONENT DEFINITION [id=e59c754e-61eb-4392-8c4a-2c0ac72bfcd4]';
-
-export function isClosureComponent(object) {
-  return typeof object === 'object' && object && object[COMPONENT_DEF_BRAND];
-}
 
 export class ClosureComponentReference extends CachedReference {
   static create(args, blockMeta, env) {
@@ -43,7 +37,7 @@ export class ClosureComponentReference extends CachedReference {
     if (typeof nameOrDef === 'string') {
       definition = env.getComponentDefinition([nameOrDef], blockMeta);
       assert(`The component helper cannot be used without a valid component name. You used "${nameOrDef}" via (component "${nameOrDef}")`, definition);
-    } else if (isClosureComponent(nameOrDef)) {
+    } else if (isComponentDefinition(nameOrDef)) {
       definition = nameOrDef;
     } else {
       assert(

@@ -2,10 +2,10 @@ import {
   ArgsSyntax,
   StatementSyntax,
   GetSyntax,
-  PositionalArgsSyntax
+  PositionalArgsSyntax,
+  isComponentDefinition
 } from 'glimmer-runtime';
 import { UNDEFINED_REFERENCE } from 'glimmer-reference';
-import { isClosureComponent } from '../helpers/component';
 import { assert } from 'ember-metal/debug';
 
 function dynamicComponentFor(vm) {
@@ -69,7 +69,7 @@ class DynamicComponentReference {
       assert(`Could not find component named "${nameOrDef}" (no component or template with that name was found)`, definition);
 
       return definition;
-    } else if (isClosureComponent(nameOrDef)) {
+    } else if (isComponentDefinition(nameOrDef)) {
       return nameOrDef;
     } else {
       return null;
