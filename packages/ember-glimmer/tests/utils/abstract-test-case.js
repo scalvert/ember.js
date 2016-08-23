@@ -351,14 +351,17 @@ export class AbstractRenderingTest extends TestCase {
   render(templateStr, context = {}) {
     let { owner } = this;
 
+    owner.register('template:-top-level', this.compile(templateStr, {
+      moduleName: '-top-level'
+    }));
+
     let attrs = assign({}, context, {
       tagName: '',
-      layout: this.compile(templateStr, {
-        moduleName: '-top-level'
-      })
+      layoutName: '-top-level'
     });
 
     owner.register('component:-top-level', Component.extend(attrs));
+
 
     this.component = owner.lookup('component:-top-level');
 

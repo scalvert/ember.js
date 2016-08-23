@@ -25,7 +25,7 @@ if (isEnabled('ember-glimmer-detect-backtracking-rerender') ||
 const { backburner } = run;
 
 class DynamicScope {
-  constructor({ view, outletState, rootOutletState, isTopLevel, targetObject }) {
+  constructor(view, outletState, rootOutletState, isTopLevel, targetObject) {
     this.view = view;
     this.outletState = outletState;
     this.rootOutletState = rootOutletState;
@@ -34,7 +34,9 @@ class DynamicScope {
   }
 
   child() {
-    return new DynamicScope(this);
+    return new DynamicScope(
+      this.view, this.outletState, this.rootOutletState, this.isTopLevel, this.targetObject
+    );
   }
 }
 
@@ -99,30 +101,14 @@ class Renderer {
     let self = new RootReference(view);
     let targetObject = view.outletState.render.controller;
     let ref = view.toReference();
-    let dynamicScope = new DynamicScope({
-      view,
-      targetObject,
-      outletState: ref,
-      rootOutletState: ref,
-      isTopLevel: true
-    });
+    let dynamicScope = new DynamicScope(view, ref, ref, true, targetObject);
     this._renderRoot(view, view.template, self, target, dynamicScope);
   }
 
   appendTo(view, target) {
-    let top = new RootComponentDefinition(view);
-    let self = new RootReference(top);
-    let dynamicScope = new DynamicScope({
-      view,
-      // this is generally only used for the test harness, and is not a "supported"
-      // mechanism for setting up a template/test environment. We are defaulting the
-      // targetObject to the view instance based on the assumption that it is a component
-      // instance
-      targetObject: view,
-      outletState: UNDEFINED_REFERENCE,
-      rootOutletState: UNDEFINED_REFERENCE,
-      isTopLevel: true
-    });
+    let rootDef = new RootComponentDefinition(view);
+    let self = new RootReference(rootDef);
+    let dynamicScope = new DynamicScope(view, UNDEFINED_REFERENCE, UNDEFINED_REFERENCE, true, null);
     this._renderRoot(view, RootTemplate.create({ env: this }), self, target, dynamicScope);
   }
 

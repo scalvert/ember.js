@@ -55,8 +55,7 @@ moduleFor('Template factory test', class extends RenderingTest {
 
     this.render('{{x-precompiled name="precompiled"}} {{x-compiled name="compiled"}}');
 
-    // This extra miss is from rendering the root layout in the test harness component
-    assert.equal(env._templateCache.misses, 3, 'misses 3');
+    assert.equal(env._templateCache.misses, 2, 'misses 2');
     assert.equal(env._templateCache.hits, 2, 'hits 2');
 
     this.assertText('Hello precompiled Hello compiled');
