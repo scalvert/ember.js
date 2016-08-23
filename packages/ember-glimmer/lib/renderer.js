@@ -179,10 +179,6 @@ class Renderer {
       this._result = result;
       this._lastRevision = CURRENT_TAG.value();
 
-      if (root._transitionTo) {
-        root._transitionTo('inDOM');
-      }
-
       render = () => {
         result.rerender(options);
         this._lastRevision = CURRENT_TAG.value();
