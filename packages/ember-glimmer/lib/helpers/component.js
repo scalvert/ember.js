@@ -4,17 +4,10 @@ import { EvaluatedArgs, EvaluatedNamedArgs, EvaluatedPositionalArgs } from 'glim
 import { assert } from 'ember-metal/debug';
 import assign from 'ember-metal/assign';
 
-const CLOSURE_COMPONENT = 'ba564e81-ceda-4475-84a7-1c44f1c42c0e';
+const COMPONENT_DEF_BRAND = 'COMPONENT DEFINITION [id=e59c754e-61eb-4392-8c4a-2c0ac72bfcd4]';
 
 export function isClosureComponent(object) {
-  return typeof object === 'object' && object && object[CLOSURE_COMPONENT];
-}
-
-class ClosureComponentDefinition extends CurlyComponentDefinition {
-  constructor(name, ComponentClass, template, args) {
-    super(...arguments);
-    this[CLOSURE_COMPONENT] = true;
-  }
+  return typeof object === 'object' && object && object[COMPONENT_DEF_BRAND];
 }
 
 export class ClosureComponentReference extends CachedReference {
@@ -71,7 +64,7 @@ export class ClosureComponentReference extends CachedReference {
 function createCurriedDefinition(definition, args) {
   let curriedArgs = curryArgs(definition, args);
 
-  return new ClosureComponentDefinition(
+  return new CurlyComponentDefinition(
     definition.name,
     definition.ComponentClass,
     definition.template,

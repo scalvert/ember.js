@@ -7,6 +7,8 @@ import { assert } from 'ember-metal/debug';
 import _runInTransaction from 'ember-metal/transaction';
 import isEnabled from 'ember-metal/features';
 import { BOUNDS } from './component';
+import RootTemplate from './templates/root';
+import { RootComponentDefinition } from './syntax/curly-component';
 
 let runInTransaction;
 
@@ -108,7 +110,8 @@ class Renderer {
   }
 
   appendTo(view, target) {
-    let self = new RootReference(view);
+    let top = new RootComponentDefinition(view);
+    let self = new RootReference(top);
     let dynamicScope = new DynamicScope({
       view,
       // this is generally only used for the test harness, and is not a "supported"
@@ -120,7 +123,7 @@ class Renderer {
       rootOutletState: UNDEFINED_REFERENCE,
       isTopLevel: true
     });
-    this._renderRoot(view, view.template, self, target, dynamicScope);
+    this._renderRoot(view, RootTemplate.create({ env: this }), self, target, dynamicScope);
   }
 
   rerender(view) {
