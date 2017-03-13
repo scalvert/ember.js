@@ -80,6 +80,22 @@ const RouterService = Service.extend({
    */
   urlFor(/* routeName, ...models, options */) {
     return this.router.generate(...arguments);
+  },
+
+  /**
+     Determines whether a route is active.
+
+     @method urlFor
+     @param {String} routeName the name of the route
+     @param {...Object} models the model(s) or identifier(s) to be used while
+       transitioning to the route.
+     @param {Object} [options] optional hash with a queryParams property
+       containing a mapping of query parameters
+     @return {String} the string representing the generated URL
+     @public
+   */
+  isActive(/* routeName, ...models, options */) {
+    return this.router.isActive(...arguments);
   }
 });
 

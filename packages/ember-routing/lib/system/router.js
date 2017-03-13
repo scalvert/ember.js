@@ -425,6 +425,7 @@ const EmberRouter = EmberObject.extend(Evented, {
     @private
   */
   isActive(routeName) {
+    debugger;
     return this._routerMicrolib.isActive(...arguments);
   },
 
