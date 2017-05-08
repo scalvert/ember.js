@@ -48,7 +48,7 @@ if (isFeatureEnabled('ember-routing-router-service')) {
     }
 
     ['@test RouterService#urlFor returns URL for simple route with basic query params'](assert) {
-      assert.expect(1);
+      assert.expect(2);
 
       let queryParams = this.buildQueryParams({ sort: 'ASC' });
 
