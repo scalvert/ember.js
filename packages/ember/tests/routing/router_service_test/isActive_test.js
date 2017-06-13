@@ -14,9 +14,9 @@ import {
   moduleFor
 } from 'internal-test-helpers';
 
-import { isFeatureEnabled } from 'ember-metal';
+import { EMBER_ROUTING_ROUTER_SERVICE } from 'ember/features';
 
-if (isFeatureEnabled('ember-routing-router-service')) {
+if (EMBER_ROUTING_ROUTER_SERVICE) {
   moduleFor('Router Service - isActive', class extends RouterTestCase {
     ['@test RouterService#isActive returns true for simple route'](assert) {
       assert.expect(1);
