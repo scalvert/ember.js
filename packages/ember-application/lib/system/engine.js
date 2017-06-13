@@ -2,7 +2,7 @@
 @module ember
 @submodule ember-application
 */
-import { canInvoke, EmptyObject } from 'ember-utils';
+import { canInvoke } from 'ember-utils';
 import {
   Namespace,
   RegistryProxyMixin,
@@ -13,7 +13,8 @@ import {
   privatize as P
 } from 'container';
 import DAG from 'dag-map';
-import { get, set, assert, deprecate } from 'ember-metal';
+import { assert, deprecate } from 'ember-debug';
+import { get, set } from 'ember-metal';
 import DefaultResolver from './resolver';
 import EngineInstance from './engine-instance';
 import { RoutingService } from 'ember-routing';
@@ -130,7 +131,7 @@ const Engine = Namespace.extend(RegistryProxyMixin, {
           false, {
             id: 'ember-application.app-initializer-initialize-arguments',
             until: '3.0.0',
-            url: 'http://emberjs.com/deprecations/v2.x/#toc_initializer-arity'
+            url: 'https://emberjs.com/deprecations/v2.x/#toc_initializer-arity'
           });
 
         initializer.initialize(this.__registry__, this);
@@ -168,8 +169,8 @@ const Engine = Namespace.extend(RegistryProxyMixin, {
 });
 
 Engine.reopenClass({
-  initializers: new EmptyObject(),
-  instanceInitializers: new EmptyObject(),
+  initializers: Object.create(null),
+  instanceInitializers: Object.create(null),
 
   /**
     The goal of initializers should be to register dependencies and injections.

@@ -1,4 +1,4 @@
-import { deprecate } from 'ember-metal';
+import { deprecate } from 'ember-debug';
 import calculateLocationDisplay from
   '../system/calculate-location-display';
 
@@ -20,7 +20,7 @@ DeprecateRenderModel.prototype.transform = function DeprecateRenderModel_transfo
       deprecate(deprecationMessage(moduleName, node, param), false, {
         id: 'ember-template-compiler.deprecate-render-model',
         until: '3.0.0',
-        url: 'http://emberjs.com/deprecations/v2.x#toc_model-param-in-code-render-code-helper'
+        url: 'https://emberjs.com/deprecations/v2.x#toc_model-param-in-code-render-code-helper'
       });
     });
   });

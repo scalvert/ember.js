@@ -2,7 +2,7 @@ import { guidFor } from 'ember-utils';
 import Logger from 'ember-console';
 import { context, ENV } from 'ember-environment';
 import run from './run_loop';
-import { assert, deprecate } from './debug';
+import { assert, deprecate } from 'ember-debug';
 import { get } from './property_get';
 import { trySet } from './property_set';
 import { addListener } from './events';
@@ -44,7 +44,7 @@ class Binding {
   /**
     @class Binding
     @namespace Ember
-    @deprecated See http://emberjs.com/deprecations/v2.x#toc_ember-binding
+    @deprecated See https://emberjs.com/deprecations/v2.x#toc_ember-binding
     @public
   */
 
@@ -303,17 +303,17 @@ function fireDeprecations(obj, toPath, fromPath, deprecateGlobal, deprecateOneWa
   deprecate(objectInfo + deprecateGlobalMessage, !deprecateGlobal, {
     id: 'ember-metal.binding',
     until: '3.0.0',
-    url: 'http://emberjs.com/deprecations/v2.x#toc_ember-binding'
+    url: 'https://emberjs.com/deprecations/v2.x#toc_ember-binding'
   });
   deprecate(objectInfo + deprecateOneWayMessage, !deprecateOneWay, {
     id: 'ember-metal.binding',
     until: '3.0.0',
-    url: 'http://emberjs.com/deprecations/v2.x#toc_ember-binding'
+    url: 'https://emberjs.com/deprecations/v2.x#toc_ember-binding'
   });
   deprecate(objectInfo + deprecateAliasMessage, !deprecateAlias, {
     id: 'ember-metal.binding',
     until: '3.0.0',
-    url: 'http://emberjs.com/deprecations/v2.x#toc_ember-binding'
+    url: 'https://emberjs.com/deprecations/v2.x#toc_ember-binding'
   });
 }
 

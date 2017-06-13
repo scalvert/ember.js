@@ -10,10 +10,12 @@ import {
 } from 'ember-views';
 import { TargetActionSupport } from 'ember-runtime';
 import {
-  get,
-  PROPERTY_DID_CHANGE,
   assert,
   deprecate
+} from 'ember-debug';
+import {
+  get,
+  PROPERTY_DID_CHANGE,
 } from 'ember-metal';
 import { UPDATE, RootReference } from './utils/references';
 import { DirtyableTag } from '@glimmer/reference';
@@ -548,7 +550,7 @@ const Component = CoreView.extend(
           {
             id: 'ember-views.component.defaultLayout',
             until: '3.0.0',
-            url: 'http://emberjs.com/deprecations/v2.x/#toc_ember-component-defaultlayout'
+            url: 'https://emberjs.com/deprecations/v2.x/#toc_ember-component-defaultlayout'
           }
         );
 

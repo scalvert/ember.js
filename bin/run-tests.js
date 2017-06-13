@@ -3,7 +3,7 @@
 var RSVP  = require('rsvp');
 var spawn = require('child_process').spawn;
 var chalk = require('chalk');
-var getFeatures = require('../ember-cli-build').getFeatures;
+var FEATURES = require('../broccoli/features');
 var getPackages = require('../lib/packages');
 var runInSequence = require('../lib/run-in-sequence');
 
@@ -90,7 +90,7 @@ function runInPhantom(url, retries, resolve, reject) {
 var testFunctions = [];
 
 function generateEachPackageTests() {
-  var features = getFeatures();
+  var features = FEATURES;
   var packages = getPackages(features);
 
   Object.keys(packages).forEach(function(packageName) {
@@ -171,7 +171,7 @@ switch (process.env.TEST_SUITE) {
     server.close();
     return;
   case 'travis-browsers':
-    console.log('suite: sauce');
+    console.log('suite: travis-browsers');
     require('./run-travis-browser-tests');
     return;
 

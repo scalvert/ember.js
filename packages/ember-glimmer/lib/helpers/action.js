@@ -4,16 +4,15 @@
 */
 import { symbol } from 'ember-utils';
 import {
-  assert,
   run,
   get,
   flaggedInstrument,
-  isNone,
-  runInDebug
+  isNone
 } from 'ember-metal';
 import { UnboundReference } from '../utils/references';
-import { EvaluatedPositionalArgs } from '@glimmer/runtime';
 import { isConst } from '@glimmer/reference';
+import { assert } from 'ember-debug';
+import { DEBUG } from 'ember-env-flags';
 
 export const INVOKE = symbol('INVOKE');
 export const ACTION = symbol('ACTION');
@@ -272,23 +271,17 @@ export const ACTION = symbol('ACTION');
 export default function(vm, args) {
   let { named, positional } = args;
 
+  let capturedArgs = positional.capture();
+  let { references } = capturedArgs;
+
   // The first two argument slots are reserved.
   // pos[0] is the context (or `this`)
   // pos[1] is the action name or function
   // Anything else is an action argument.
-  let context = positional.at(0);
-  let action = positional.at(1);
+  let [context, action, ...restArgs] = capturedArgs.references;
 
   // TODO: Is there a better way of doing this?
   let debugKey = action._propertyKey;
-
-  let restArgs;
-
-  if (positional.length === 2) {
-    restArgs = EvaluatedPositionalArgs.empty();
-  } else {
-    restArgs = EvaluatedPositionalArgs.create(positional.values.slice(2));
-  }
 
   let target = named.has('target') ? named.get('target') : context;
   let processArgs = makeArgsProcessor(named.has('value') && named.get('value'), restArgs);
@@ -315,7 +308,7 @@ function makeArgsProcessor(valuePathRef, actionArgsRef) {
 
   if (actionArgsRef.length > 0) {
     mergeArgs = function(args) {
-      return actionArgsRef.value().concat(args);
+      return actionArgsRef.map(ref => ref.value()).concat(args);
     };
   }
 
@@ -344,9 +337,9 @@ function makeArgsProcessor(valuePathRef, actionArgsRef) {
 
 function makeDynamicClosureAction(context, targetRef, actionRef, processArgs, debugKey) {
   // We don't allow undefined/null values, so this creates a throw-away action to trigger the assertions
-  runInDebug(function() {
+  if (DEBUG) {
     makeClosureAction(context, targetRef.value(), actionRef.value(), processArgs, debugKey);
-  });
+  }
 
   return function(...args) {
     return makeClosureAction(context, targetRef.value(), actionRef.value(), processArgs, debugKey)(...args);

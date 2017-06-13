@@ -7,7 +7,7 @@
 // HELPERS
 //
 
-import { guidFor, EmptyObject } from 'ember-utils';
+import { guidFor } from 'ember-utils';
 import {
   get,
   set,
@@ -19,10 +19,9 @@ import {
   addListener,
   removeListener,
   sendEvent,
-  hasListeners,
-  assert,
-  deprecate
+  hasListeners
 } from 'ember-metal';
+import { assert, deprecate } from 'ember-debug';
 import compare from '../compare';
 import require from 'require';
 
@@ -222,7 +221,7 @@ const Enumerable = Mixin.create({
     ```
 
     @method contains
-    @deprecated Use `Enumerable#includes` instead. See http://emberjs.com/deprecations/v2.x#toc_enumerable-contains
+    @deprecated Use `Enumerable#includes` instead. See https://emberjs.com/deprecations/v2.x#toc_enumerable-contains
     @param {Object} obj The object to search for.
     @return {Boolean} `true` if object is found in enumerable.
     @public
@@ -231,7 +230,7 @@ const Enumerable = Mixin.create({
     deprecate(
       '`Enumerable#contains` is deprecated, use `Enumerable#includes` instead.',
       false,
-      { id: 'ember-runtime.enumerable-contains', until: '3.0.0', url: 'http://emberjs.com/deprecations/v2.x#toc_enumerable-contains' }
+      { id: 'ember-runtime.enumerable-contains', until: '3.0.0', url: 'https://emberjs.com/deprecations/v2.x#toc_enumerable-contains' }
     );
 
     let found = this.find(item => item === obj);
@@ -1086,7 +1085,7 @@ const Enumerable = Mixin.create({
 
   uniqBy(key) {
     let ret = emberA();
-    let seen = new EmptyObject();
+    let seen = Object.create(null);
 
     this.forEach((item) => {
       let guid = guidFor(get(item, key));

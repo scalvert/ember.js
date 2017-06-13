@@ -2,13 +2,14 @@
 @module ember
 @submodule ember-glimmer
 */
-import { assert } from 'ember-metal';
+import { assert } from 'ember-debug';
 import { wrapComponentClassAttribute } from '../utils/bindings';
 import { dynamicComponentMacro } from './dynamic-component';
+import { hashToArgs } from './utils';
 
 function buildTextFieldSyntax(params, hash, builder) {
-  let definition = builder.env.getComponentDefinition(['-text-field'], builder.symbolTable);
-  builder.component.static(definition, [params, hash, null, null], builder.symbolTable);
+  let definition = builder.env.getComponentDefinition('-text-field', builder.meta.templateMeta);
+  builder.component.static(definition, [params, hashToArgs(hash), null, null]);
   return true;
 }
 
@@ -16,7 +17,7 @@ function buildTextFieldSyntax(params, hash, builder) {
   The `{{input}}` helper lets you create an HTML `<input />` component.
   It causes an `Ember.TextField` component to be rendered.  For more info,
   see the [Ember.TextField](/api/classes/Ember.TextField.html) docs and
-  the [templates guide](http://emberjs.com/guides/templates/input-helpers/).
+  the [templates guide](https://emberjs.com/guides/templates/input-helpers/).
 
   ```handlebars
   {{input value="987"}}
@@ -54,7 +55,7 @@ function buildTextFieldSyntax(params, hash, builder) {
   {{input value=searchWord}}
   ```
 
-  In this example, the inital value in the `<input />` will be set to the value of `searchWord`.
+  In this example, the initial value in the `<input />` will be set to the value of `searchWord`.
   If the user changes the text, the value of `searchWord` will also be updated.
 
   ### Actions
@@ -145,7 +146,7 @@ function buildTextFieldSyntax(params, hash, builder) {
   @public
 */
 
-export function inputMacro(path, params, hash, builder) {
+export function inputMacro(name, params, hash, builder) {
   let keys;
   let values;
   let typeIndex = -1;
@@ -174,8 +175,8 @@ export function inputMacro(path, params, hash, builder) {
 
         wrapComponentClassAttribute(hash);
 
-        let definition = builder.env.getComponentDefinition(['-checkbox'], builder.symbolTable);
-        builder.component.static(definition, [params, hash, null, null], builder.symbolTable);
+        let definition = builder.env.getComponentDefinition('-checkbox', builder.meta.templateMeta);
+        builder.component.static(definition, [params, hashToArgs(hash), null, null]);
         return true;
       } else {
         return buildTextFieldSyntax(params, hash, builder);

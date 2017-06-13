@@ -12,7 +12,6 @@ import {
   isEmpty
 } from 'ember-metal';
 import { assign } from 'ember-utils';
-import RouterDSL from '../system/dsl';
 
 
 function shallowEqual(a, b) {
@@ -40,12 +39,13 @@ const RouterService = Service.extend({
   currentState: readOnly('router.currentState'),
   location: readOnly('router.location'),
   rootURL: readOnly('router.rootURL'),
+  router: null,
 
   /**
      Transition the application into another route. The route may
      be either a single route or route path:
 
-     See [Route.transitionTo](http://emberjs.com/api/classes/Ember.Route.html#method_transitionTo) for more info.
+     See [Route.transitionTo](https://emberjs.com/api/classes/Ember.Route.html#method_transitionTo) for more info.
 
      @method transitionTo
      @category ember-routing-router-service
@@ -66,7 +66,7 @@ const RouterService = Service.extend({
      Transition into another route while replacing the current URL, if possible.
      The route may be either a single route or route path:
 
-     See [Route.replaceWith](http://emberjs.com/api/classes/Ember.Route.html#method_replaceWith) for more info.
+     See [Route.replaceWith](https://emberjs.com/api/classes/Ember.Route.html#method_replaceWith) for more info.
 
      @method replaceWith
      @category ember-routing-router-service

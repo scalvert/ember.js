@@ -3,20 +3,16 @@ import { testBoth } from 'internal-test-helpers';
 import {
   ComputedProperty,
   computed,
-  cacheFor
-} from '../computed';
-
-import {
+  cacheFor,
   Descriptor,
-  defineProperty
-} from '../properties';
-import { get } from '../property_get';
-import { set } from '../property_set';
-import { isWatching } from '../watching';
-import {
+  defineProperty,
+  get,
+  set,
+  isWatching,
   addObserver,
-  _addBeforeObserver
-} from '../observer';
+  _addBeforeObserver,
+  meta as metaFor
+} from '..';
 
 let obj, count;
 
@@ -484,6 +480,21 @@ testBoth('throws assertion if brace expansion notation has spaces', function (ge
       return 'roo ' + count;
     }).property('fee.{bar, baz,bop , }'));
   }, /cannot contain spaces/);
+});
+
+testBoth('throws an assertion if an uncached `get` is called after object is destroyed', function(get, set) {
+  equal(isWatching(obj, 'bar'), false, 'precond not watching dependent key');
+
+  let meta = metaFor(obj);
+  meta.destroy();
+
+  obj.toString = () => '<custom-obj:here>';
+
+  expectAssertion(() => {
+    get(obj, 'foo', 'bar');
+  }, 'Cannot modify dependent keys for `foo` on `<custom-obj:here>` after it has been destroyed.');
+
+  equal(isWatching(obj, 'bar'), false, 'deps were not updated');
 });
 
 // ..........................................................

@@ -1,58 +1,17 @@
 import { guidFor, getOwner } from 'ember-utils';
-import { assert, deprecate, descriptor, runInDebug, Mixin } from 'ember-metal';
+import { descriptor, Mixin } from 'ember-metal';
+import { assert, deprecate } from 'ember-debug';
 import { environment } from 'ember-environment';
 import { matches } from '../system/utils';
 import { POST_INIT } from 'ember-runtime/system/core_object';
 import jQuery from '../system/jquery';
+import { DEBUG } from 'ember-env-flags';
 
 function K() { return this; }
 
-export let dispatchLifeCycleHook = (component, hook, oldAttrs, newAttrs) => {
-  component.trigger(hook, { attrs: newAttrs, oldAttrs, newAttrs });
-};
-
-runInDebug(() => {
-  class Attrs {
-    constructor(oldAttrs, newAttrs, message) {
-      this._oldAttrs = oldAttrs;
-      this._newAttrs = newAttrs;
-      this._message = message;
-    }
-
-    get attrs() {
-      return this.newAttrs;
-    }
-
-    get oldAttrs() {
-      deprecate(this._message, false, {
-        id: 'ember-views.lifecycle-hook-arguments',
-        until: '2.13.0',
-        url: 'http://emberjs.com/deprecations/v2.x/#toc_arguments-in-component-lifecycle-hooks'
-      });
-
-      return this._oldAttrs;
-    }
-
-    get newAttrs() {
-      deprecate(this._message, false, {
-        id: 'ember-views.lifecycle-hook-arguments',
-        until: '2.13.0',
-        url: 'http://emberjs.com/deprecations/v2.x/#toc_arguments-in-component-lifecycle-hooks'
-      });
-
-      return this._newAttrs;
-    }
-  }
-
-  dispatchLifeCycleHook = (component, hook, oldAttrs, newAttrs) => {
-    if (typeof component[hook] === 'function' && component[hook].length !== 0) {
-      // Already warned in init
-      component.trigger(hook, { attrs: newAttrs, oldAttrs, newAttrs });
-    } else {
-      component.trigger(hook, new Attrs(oldAttrs, newAttrs, `[DEPRECATED] Ember will stop passing arguments to component lifecycle hooks. Please change \`${component.toString()}#${hook}\` to stop taking arguments.`));
-    }
-  };
-});
+export function dispatchLifeCycleHook(component, hook) {
+  component.trigger(hook);
+}
 
 /**
  @class ViewMixin
@@ -268,91 +227,6 @@ export default Mixin.create({
   },
 
   /**
-    Creates a new DOM element, renders the view into it, then returns the
-    element.
-
-    By default, the element created and rendered into will be a `BODY` element,
-    since this is the default context that views are rendered into when being
-    inserted directly into the DOM.
-
-    ```js
-    let element = view.renderToElement();
-    element.tagName; // => "BODY"
-    ```
-
-    You can override the kind of element rendered into and returned by
-    specifying an optional tag name as the first argument.
-
-    ```js
-    let element = view.renderToElement('table');
-    element.tagName; // => "TABLE"
-    ```
-
-    This method is useful if you want to render the view into an element that
-    is not in the document's body. Instead, a new `body` element, detached from
-    the DOM is returned. FastBoot uses this to serialize the rendered view into
-    a string for transmission over the network.
-
-    ```js
-    app.visit('/').then(function(instance) {
-      let element;
-      Ember.run(function() {
-        element = renderToElement(instance);
-      });
-
-      res.send(serialize(element));
-    });
-    ```
-
-    @method renderToElement
-    @param {String} tagName The tag of the element to create and render into. Defaults to "body".
-    @return {HTMLBodyElement} element
-    @deprecated Use appendTo instead.
-    @private
-  */
-  renderToElement(tagName = 'body') {
-    deprecate(
-      `Using the \`renderToElement\` is deprecated in favor of \`appendTo\`. Called in ${this.toString()}`,
-      false,
-      {
-        id: 'ember-views.render-to-element',
-        until: '2.12.0',
-        url: 'http://emberjs.com/deprecations/v2.x#toc_code-rendertoelement-code'
-      }
-    );
-
-    let element = this.renderer.createElement(tagName);
-
-    this.renderer.appendTo(this, element);
-    return element;
-  },
-
-  /**
-    Replaces the content of the specified parent element with this view's
-    element. If the view does not have an HTML representation yet,
-    the element will be generated automatically.
-
-    Note that this method just schedules the view to be appended; the DOM
-    element will not be appended to the given element until all bindings have
-    finished synchronizing
-
-    @method replaceIn
-    @param {String|DOMElement|jQuery} target A selector, element, HTML string, or jQuery object
-    @return {Ember.View} received
-    @private
-  */
-  replaceIn(selector) {
-    let target = jQuery(selector);
-
-    assert(`You tried to replace in (${selector}) but that isn't in the DOM`, target.length > 0);
-    assert('You cannot replace an existing Ember.View.', !target.is('.ember-view') && !target.parents().is('.ember-view'));
-
-    this.renderer.replaceIn(this, target[0]);
-
-    return this;
-  },
-
-  /**
     Appends the view's element to the document body. If the view does
     not have an HTML representation yet
     the element will be generated automatically.
@@ -536,7 +410,16 @@ export default Mixin.create({
       let owner = getOwner(this);
       let dispatcher = owner && owner.lookup('event_dispatcher:main');
 
-      if (dispatcher && dispatcher.canDispatchToEventManager === null) {
+      deprecate(
+        `\`eventManager\` has been deprecated in ${this}.`,
+        false,
+        {
+          id: 'ember-views.event-dispatcher.canDispatchToEventManager',
+          until: '2.16.0'
+        }
+      );
+
+      if (dispatcher && !('canDispatchToEventManager' in dispatcher)) {
         dispatcher.canDispatchToEventManager = true;
       }
     }
@@ -547,37 +430,7 @@ export default Mixin.create({
       {
         id: 'ember-views.did-init-attrs',
         until: '3.0.0',
-        url: 'http://emberjs.com/deprecations/v2.x#toc_ember-component-didinitattrs'
-      }
-    );
-
-    deprecate(
-      `[DEPRECATED] Ember will stop passing arguments to component lifecycle hooks. Please change \`${this.toString()}#didInitAttrs\` to stop taking arguments.`,
-      typeof this.didInitAttrs !== 'function' || this.didInitAttrs.length === 0,
-      {
-        id: 'ember-views.lifecycle-hook-arguments',
-        until: '2.13.0',
-        url: 'http://emberjs.com/deprecations/v2.x/#toc_arguments-in-component-lifecycle-hooks'
-      }
-    );
-
-    deprecate(
-      `[DEPRECATED] Ember will stop passing arguments to component lifecycle hooks. Please change \`${this.toString()}#didReceiveAttrs\` to stop taking arguments.`,
-      typeof this.didReceiveAttrs !== 'function' || this.didReceiveAttrs.length === 0,
-      {
-        id: 'ember-views.lifecycle-hook-arguments',
-        until: '2.13.0',
-        url: 'http://emberjs.com/deprecations/v2.x/#toc_arguments-in-component-lifecycle-hooks'
-      }
-    );
-
-    deprecate(
-      `[DEPRECATED] Ember will stop passing arguments to component lifecycle hooks. Please change \`${this.toString()}#didUpdateAttrs\` to stop taking arguments.`,
-      typeof this.didUpdateAttrs !== 'function' || this.didUpdateAttrs.length === 0,
-      {
-        id: 'ember-views.lifecycle-hook-arguments',
-        until: '2.13.0',
-        url: 'http://emberjs.com/deprecations/v2.x/#toc_arguments-in-component-lifecycle-hooks'
+        url: 'https://emberjs.com/deprecations/v2.x#toc_ember-component-didinitattrs'
       }
     );
 
